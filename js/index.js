@@ -29,8 +29,8 @@ var con = mysql.createConnection({
    * os dados que vieram do body da request
    */
   var cafe = {
-    qtd: req.body.qtd,
-    tipo: req.body.tipo,
+    nome: req.body.nome,
+    preco: req.body.preco,
     preco: req.body.preco
   };
 
@@ -40,13 +40,13 @@ var con = mysql.createConnection({
 
   /** Escrevendo query que será executada */
   var strQuery =
-    "INSERT INTO cafe (qtd, tipo, preco)" +
+    "INSERT INTO cafe (nome, preco, qtd)" +
     " VALUES ('" +
-    cafe.qtd +
+    cafe.nome +
     "', " +
-    cafe.tipo +
-    ", '" +
     cafe.preco +
+    ", '" +
+    cafe.qtd +
     "');";
 
   /** Exibindo query no console */
@@ -69,6 +69,38 @@ var con = mysql.createConnection({
   /** Encerrando método da REST API */
   next();
   }
+
+
+var server = restify.createServer({ name: "CoffeeShop Express" });
+server.use(restify.plugins.bodyParser());
+server.use(restify.plugins.queryParser());
+
+const cors = corsMiddleware({
+    origins: ["*"],
+    allowHeaders: ["API-Token"],
+    exposeHeaders: ["API-Token-Expiry"]
+});
+
+server.pre(cors.preflight);
+server.use(cors.actual);
+
+var coffeePoint = "/coffee";
+
+server.post(`${coffeePoint}/inserir`, createTable);
+server.post(`${coffeePoint}/inserir-estufa`, createTableEstufa);
+
+server.get(`${coffeePoint}/account/pesquisa/by-id/:userId`, getUserById);
+server.get(`${coffeePoint}/account/pesquisa/by-acname/:acName`, getUserByAcName);
+
+server.get(`${coffeePoint}/estufas/listar-todas/`, getAllEstufas);
+
+var port = process.env.PORT || 5000;
+
+//Subindo o servidor
+server.listen(port, function () {
+    console.log("%s rodando", server.name);
+    console.log("Escutando na porta 5000");
+})
 
 
 

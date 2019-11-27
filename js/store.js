@@ -101,3 +101,13 @@ function updateCartTotal() {
     total = Math.round(total * 100) / 100
     document.getElementsByClassName('cart-total-price')[0].innerText = '$' + total
 }
+
+function addBD(){
+    for (var i = 0; i < cartRows.length; i++) {
+        var cartRow = cartRows[i]
+        var cNome = cartRow.getElementsByClassName('cart-item-title')[0]
+        var cPreco = cartRow.getElementsByClassName('cart-price cart-column')[0]
+        var cQtd = cartRow.getElementsByClassName('cart-quantity-input')[0]
+    }
+  
+}
