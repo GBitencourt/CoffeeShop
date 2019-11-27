@@ -9,57 +9,50 @@ class CafeRepository {
            id INTEGER PRIMARY KEY AUTOINCREMENT,
            cafe_Name TEXT,
            cafe_Preco DOUBLE,
-           cafe_Qtd INT,
-           ideal_Temperature TEXT,
-           userId INTEGER,
-           CONSTRAINT estufas_fk_userId FOREIGN KEY (userId)
-            REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE)`
+           cafe_Qtd INT,`
         return this.dao.run(sql)
     }
 
-    create(estufa_Name, ideal_Water, ideal_Temperature, ideal_Light, userId) {
+    create(cafe_Name, cafe_Preco, cafe_Qtd) {
         return this.dao.run(
-            `INSERT INTO estufas (estufa_Name, ideal_Water, ideal_Temperature, ideal_Light, userId)
+            `INSERT INTO cafes (cafe_Name, cafe_Preco, cafe_Qtd)
              VALUES (?, ?, ?, ?, ?)`,
-            [estufa_Name, ideal_Water, ideal_Temperature, ideal_Light, userId]
+            [cafe_Name, cafe_Preco, cafe_Qtd]
         )
     }
 
-    update(estufa) {
-        const { id, estufa_Name, ideal_Water, ideal_Temperature, ideal_Light, userId } = estufa
+    update(cafe) {
+        const { id, cafe_Name, cafe_Preco, cafe_Qtd } = cafe
         return this.dao.run(
-            `UPDATE estufas
-            SET estfua_Name = ?,
-                ideal_Water = ?,
-                ideal_Temperatur = ?,
-                ideal_Light = ?,
-                userId = ?,
+            `UPDATE cafes
+            SET cafe_Name = ?,
+                cafe_Preco = ?,
             WHERE id = ?`,
-            [estufa_Name, ideal_Water, ideal_Temperature, ideal_Light, userId, id]
+            [cafe_Name, cafe_Preco, cafe_Qtd, id]
         )
     }
 
     delete(id) {
         return this.dao.run(
-            `DELETE FROM estufas WHERE id = ?`,
+            `DELETE FROM cafes WHERE id = ?`,
             [id]
         )
     }
 
     getById(id) {
         return this.dao.get(
-            `SELECT * FROM estufas WHERE id = ?`,
+            `SELECT * FROM cafes WHERE id = ?`,
             [id])
     }
 
-    getByName(estufaName) {
+    getByName(cafeName) {
         return this.dao.get(
-            `SELECT * FROM estufas WHERE estufa_Name = ?`,
-            [estufaName])
+            `SELECT * FROM cafes WHERE cafe_Name = ?`,
+            [cafeName])
     }
 
-    getAllEstufas(){
-        return this.dao.get(`SELECT * FROM estufas`)
+    getAllcafes() {
+        return this.dao.get(`SELECT * FROM cafes`)
     }
 }
 

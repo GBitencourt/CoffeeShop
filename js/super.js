@@ -7,14 +7,14 @@ const Promise = require('bluebird')
 const AppDAO = require('./dao')
 const UserRepository = require('./user_repository')
 const AccountRepository = require('./account_repository');
-const EstufaRepository = require('./estufa_repository')
+const CafeRepository = require('./cafe_repository')
 var restify = require("restify");
 var corsMiddleware = require("restify-cors-middleware");
 const dao = new AppDAO('./database.sqlite3')
 const blogUserData = { name: 'Admin' }
 const userRepo = new UserRepository(dao)
 const accountRepo = new AccountRepository(dao)
-const estufaRepo = new EstufaRepository(dao)
+const cafeRepo = new CafeRepository(dao)
 
 
 async function getUser(req, res, next) {
@@ -92,28 +92,25 @@ async function createTable(req, res, next) {
 async function createTableCafe(req, res, next) {
     res.setHeader("content-type", "application/json");
     res.charSet("UTF-8");
-    let userId = null;
-    let ghname = req.body.estufa_Name;
-    let aguaIdeal = req.body.ideal_Water;
-    let luzIdeal = req.body.ideal_Light;
-    let tempIdeal = req.body.ideal_Temperature;
+    let cNome = req.body.cafe_Name;
+    let cPreco = req.body.cafe_Preco;
+    let cQtd = req.body.cafe_Qtd;
     await userRepo.createTable()
-        .then(() => estufaRepo.createTable())
+        .then(() => cafeRepo.createTable())
         .then(() => userRepo.create(blogUserData.name))
         .then((data) => {
             userId = data.id
-            var estufas = [ // estufas dos usuarios
+            var cafes = [ // cafes dos usuarios
                 {
-                    estufa_Name: ghname,
-                    ideal_Water: aguaIdeal,
-                    ideal_Light: luzIdeal,
-                    ideal_Temperature: tempIdeal,
+                    cafe_Name: cNome,
+                    cafe_Preco: cPreco,
+                    cafe_Qtd: cQtd,
                     userId
                 }
             ]
-            return Promise.all(estufas.map((estufa) => {
-                var { estufa_Name, ideal_Water, ideal_Light, ideal_Temperature, userId } = estufa
-                return estufaRepo.create(estufa_Name, ideal_Water, ideal_Light, ideal_Temperature, userId)
+            return Promise.all(cafes.map((cafe) => {
+                var { cafe_Name, cafe_Preco, cafe_Qtd, userId} = cafe
+                return cafeRepo.create(cafe_Name, cafe_Preco, cafe_Qtd, userId)
             }))
         })
         .catch((err) => {
@@ -143,25 +140,25 @@ async function getUserByAcName(req, res, next) {
     next();
 }
 
-async function getAllEstufas(req, res, next){
+async function getAllCafes(req, res, next){
     res.setHeader("content-type", "application/json");
     res.charSet("UTF-8");
 
-    let estufa_Name = req.params.estufa_Name;
+    let cafe_Name = req.params.cafe_Name;
 
-    let data = await estufaRepo.getAllEstufas()
-        .then((estufas) => {
+    let data = await cafeRepo.getAllCafes()
+        .then((cafes) => {
             // todo ver retorno do banco
     
-            console.log(estufas);
-            return estufas;
+            console.log(cafes);
+            return cafes;
         })
     res.json(data);
     next();
 }
 
 
-var server = restify.createServer({ name: "Estufa Automatizada" });
+var server = restify.createServer({ name: "CoffeeShop Express" });
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
 
@@ -174,15 +171,15 @@ const cors = corsMiddleware({
 server.pre(cors.preflight);
 server.use(cors.actual);
 
-var estufaPoint = "/estufa";
+var cafePoint = "/cafe";
 
-server.post(`${estufaPoint}/inserir`, createTable);
-server.post(`${estufaPoint}/inserir-estufa`, createTableEstufa);
+server.post(`${cafePoint}/inserir`, createTable);
+server.post(`${cafePoint}/inserir-cafe`, createTableCafe);
 
-server.get(`${estufaPoint}/account/pesquisa/by-id/:userId`, getUserById);
-server.get(`${estufaPoint}/account/pesquisa/by-acname/:acName`, getUserByAcName);
+server.get(`${cafePoint}/account/pesquisa/by-id/:userId`, getUserById);
+server.get(`${cafePoint}/account/pesquisa/by-acname/:acName`, getUserByAcName);
 
-server.get(`${estufaPoint}/estufas/listar-todas/`, getAllEstufas);
+server.get(`${cafePoint}/cafes/listar-todas/`, getAllCafes);
 
 var port = process.env.PORT || 5000;
 
