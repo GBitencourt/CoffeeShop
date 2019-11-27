@@ -4,6 +4,34 @@ if (document.readyState == 'loading') {
     ready()
 }
 
+var mysql = require('mysql');
+
+var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "1234",
+    database: "coffeeshop"
+});
+
+con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+    con.query("CREATE DATABASE coffeeshop", function (err, result) {
+        if (err) throw err;
+        console.log("Database created");
+    });
+});
+
+con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+    var sql = "CREATE TABLE cafes (cNome VARCHAR(255), cPreco DOUBLE, cQtd INT)";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log("Table Created");
+    });
+});
+
 function ready() {
     var removeCartItemButtons = document.getElementsByClassName('btn-danger')
     for (var i = 0; i < removeCartItemButtons.length; i++) {
@@ -84,6 +112,7 @@ function addItemToCart(title, price, imageSrc) {
     cartItems.append(cartRow)
     cartRow.getElementsByClassName('btn-danger')[0].addEventListener('click', removeCartItem)
     cartRow.getElementsByClassName('cart-quantity-input')[0].addEventListener('change', quantityChanged)
+    addBD()
 }
 
 function updateCartTotal() {
@@ -102,12 +131,31 @@ function updateCartTotal() {
     document.getElementsByClassName('cart-total-price')[0].innerText = '$' + total
 }
 
-function addBD(){
+function addBD() {
+    var cartItemContainer = document.getElementsByClassName('cart-items')[0]
+    var cartRows = cartItemContainer.getElementsByClassName('cart-row')
     for (var i = 0; i < cartRows.length; i++) {
         var cartRow = cartRows[i]
         var cNome = cartRow.getElementsByClassName('cart-item-title')[0]
         var cPreco = cartRow.getElementsByClassName('cart-price cart-column')[0]
         var cQtd = cartRow.getElementsByClassName('cart-quantity-input')[0]
+        con.connect(function (err) {
+            if (err) throw err;
+            console.log("Connected!");
+            var sql = "INSERT INTO cafe (cNome, cPreco, cQtd)" +
+                " VALUES ('" +
+                cNome.cNome +
+                "', " +
+                cPreco.cPreco +
+                ", '" +
+                cQtd.cQtd +
+                "');";
+            con.query(sql, function (err, result) {
+                if (err) throw err;
+                console.log("1 record inserted");
+            });
+        });
+
     }
-  
+
 }

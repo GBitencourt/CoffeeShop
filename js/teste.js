@@ -19,7 +19,7 @@ $("#Login").click(
                   if(result){
                     if(username === result.username && password === result.password){
                         sessionStorage.username = username;
-                        window.location.href = `menu.html`
+                        window.location.href = `index.html`
                     }
                   } else {
                       alert("Usuario nao cadastrado")

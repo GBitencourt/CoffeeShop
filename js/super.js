@@ -89,7 +89,7 @@ async function createTable(req, res, next) {
     next();
 }
 
-async function createTableEstufa(req, res, next) {
+async function createTableCafe(req, res, next) {
     res.setHeader("content-type", "application/json");
     res.charSet("UTF-8");
     let userId = null;
